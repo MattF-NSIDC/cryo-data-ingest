@@ -1,7 +1,8 @@
 name: "test"
 on: ["push"]
 jobs:
-  setup-environment:
+  # TODO: How to split environment setup and test steps into different jobs?
+  test:
     defaults:
       run:
         shell: "bash -l {0}"
@@ -9,19 +10,15 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@v3"
+
       - name: "Create conda environment"
-        run: "conda env create"
+        uses: "conda-incubator/setup-miniconda@v2"
+        with:
+          environment-file: "environment.yml"
+          activate-environment: "cryo-data-ingest"
+          miniforge-version: "latest"
+        # TODO: Do we need the `setup-miniconda` action? Why not:
+        # run: "conda env create"
 
-
-  test:
-    defaults:
-      run:
-        # Login shell enables bash to process conda configuration so we can
-        # activate envs
-        shell: "bash -l {0}"
-
-    needs: "setup-environment"
-    runs-on: "ubuntu-latest"
-    steps:
       - name: "Run static analysis / tests"
-        run: "$CONDA/bin/activate cryo-data-ingest && inv test.ci"
+        run: "inv test.ci"
