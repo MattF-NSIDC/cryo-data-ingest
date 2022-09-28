@@ -78,11 +78,7 @@ def _page_cmr_results(
         yield results_page
 
         # Update the headers to get the next set of results on the next query:
-        try:
-            query_headers[CMR_SEARCH_HEADER] = response.headers.get(CMR_SEARCH_HEADER)
-        except Exception as e:
-            breakpoint()
-            ...
+        query_headers[CMR_SEARCH_HEADER] = response.headers.get(CMR_SEARCH_HEADER)
 
 
 def _collection_readable_id(collection: Collection) -> str:
