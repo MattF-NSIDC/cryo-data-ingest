@@ -41,16 +41,22 @@ def _page_cmr_results(
     cmr_query_url: str,
     /,
     *,
-    query_params: dict = {},
-    query_headers: dict = {},
+    query_params: dict | None = None,
+    query_headers: dict | None = None,
 ) -> Iterator[str]:
     """Generate results until there are no more pages.
-    
+
     Results are returned as raw strings, not parsed as any specific format. Consumer is
     expected to do e.g. `json.loads` on the results.
     """
+    # Don't forget, mutable defaults are dangerous:
+    #     https://docs.python.org/3/tutorial/controlflow.html#default-argument-values
+    query_params = query_params if query_params else dict()
+    query_headers = query_headers if query_headers else dict()
+
+
     CMR_SEARCH_HEADER = 'CMR-Search-After'
-    first_pass = True
+    page_num = 1
     while True:
         response = requests.get(
             cmr_query_url,
@@ -64,9 +70,10 @@ def _page_cmr_results(
                 f'CMR search failed with error: {response.content}',
             )
 
-        if first_pass == True:
-            logger.debug(f"Got {response.headers['CMR-Hits']} for query {cmr_query_url}")
-            first_pass = False
+        if page_num == 1:
+            logger.debug(f"Got {response.headers['CMR-Hits']} hits for query {cmr_query_url}")
+
+        logger.debug(f'Got page {page_num}...')
 
         results_page = response.content
 
@@ -80,6 +87,7 @@ def _page_cmr_results(
 
         # Update the headers to get the next set of results on the next query:
         query_headers[CMR_SEARCH_HEADER] = response.headers.get(CMR_SEARCH_HEADER)
+        page_num = page_num + 1
 
 
 def _collection_readable_id(collection: Collection) -> str:
@@ -102,7 +110,7 @@ def get_nsidc_collections() -> Iterator[Collection]:
     response = requests.get(cmr_query_url, timeout=REQUESTS_TIMEOUT)
     if not response.ok:
         raise RuntimeError(f'CMR request failed with error: {response.content}')
-    
+
     response_json = json.loads(response.content)
     collections_json = response_json['feed']['entry']
     logger.info(
