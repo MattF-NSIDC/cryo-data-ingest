@@ -1,9 +1,10 @@
 import csv
 import json
 import logging
-import requests
 from typing import Iterator, TypedDict
 from urllib.parse import urlparse
+
+import requests
 
 from cryo_data_ingest.constants.cmr import (
     CMR_COLLECTIONS_SEARCH_URL,
@@ -33,6 +34,7 @@ class Granule(TypedDict):
 
 class OutputGranule(TypedDict):
     """Just the information needed to create a datalad URL file."""
+
     local_path: str
     link: str
 
@@ -54,7 +56,6 @@ def _page_cmr_results(
     query_params = query_params if query_params else dict()
     query_headers = query_headers if query_headers else dict()
 
-
     CMR_SEARCH_HEADER = 'CMR-Search-After'
     page_num = 1
     while True:
@@ -71,7 +72,9 @@ def _page_cmr_results(
             )
 
         if page_num == 1:
-            logger.debug(f"Got {response.headers['CMR-Hits']} hits for query {cmr_query_url}")
+            logger.debug(
+                f"Got {response.headers['CMR-Hits']} hits for query {cmr_query_url}"
+            )
 
         logger.debug(f'Got page {page_num}...')
 
@@ -160,15 +163,14 @@ def write_collection_granules(collection: Collection) -> None:
         return
 
     logger.info(
-        f'Creating file for {collection_readable_id} ({len(granules)}'
-        ' granules)...'
+        f'Creating file for {collection_readable_id} ({len(granules)} granules)...'
     )
 
     # TODO: the `local_path` should not include common path parts that are in common for
     # each granule
     output_granules: list[OutputGranule] = [
         {
-            'local_path': urlparse(g['url']).path[1:], # trim leading "/"
+            'local_path': urlparse(g['url']).path[1:],  # trim leading "/"
             'link': g['url'],
         }
         for g in granules
