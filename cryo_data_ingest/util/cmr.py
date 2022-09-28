@@ -3,6 +3,7 @@ import json
 import logging
 import requests
 from typing import Iterator, TypedDict
+from urllib.parse import urlparse
 
 from cryo_data_ingest.constants.cmr import (
     CMR_COLLECTIONS_SEARCH_URL,
@@ -32,7 +33,7 @@ class Granule(TypedDict):
 
 class OutputGranule(TypedDict):
     """Just the information needed to create a datalad URL file."""
-    who: str
+    local_path: str
     link: str
 
 
@@ -155,8 +156,13 @@ def write_collection_granules(collection: Collection) -> None:
         ' granules)...'
     )
 
+    # TODO: the `local_path` should not include common path parts that are in common for
+    # each granule
     output_granules: list[OutputGranule] = [
-        {'who': collection_readable_id, 'link': g['url']}
+        {
+            'local_path': urlparse(g['url']).path,
+            'link': g['url'],
+        }
         for g in granules
     ]
 
