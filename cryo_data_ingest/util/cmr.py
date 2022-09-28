@@ -66,7 +66,7 @@ def _page_cmr_results(
         )
 
         if not response.ok:
-            raise SearchError(
+            raise RuntimeError(
                 f'CMR search failed with error: {response.content}',
             )
 
