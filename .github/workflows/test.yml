@@ -13,4 +13,4 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Run static analysis / tests"
-        run: "conda activate cryo-data-ingest && inv test.ci"
+        run: ". activate cryo-data-ingest && inv test.ci"
