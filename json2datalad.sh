@@ -4,11 +4,20 @@
 # CDI = "cryo data ingest"
 
 ###
-# Expected CSV format
+# Expected JSON format
 #
-# URL,filename
-# https://path/to/file1.ext,file1.ext
-# https://path/to/file2.ext,file2.ext
+# [
+#  {
+#    "local_path": "/path/to/file1.ext",
+#    "link": "https://url.nsidc.org/path/to/file1.ext"
+#  },
+#  {
+#    "local_path": "/path/to/file2.ext",
+#    "link": "https://url.nsidc.org/path/to/file2.ext"
+#  },
+# ]
+#
+
 
 set -o nounset
 set -o pipefail
@@ -32,8 +41,8 @@ function ctrl_c() {
 }
 
 function print_usage() { cat <<EOF
-csv2datalad.sh -c csvfile -d datalad_dir [-h|--help] [--debug] [-v]
-  -c|--csvfile:      Input CSV file [FORMAT: URL,filename]
+csv2datalad.sh -j jsonfile -d datalad_dir [-h|--help] [--debug] [-v]
+  -j|--jsonfile:     Input JSON file [keys: local_path & link]
   -d|--datalad_dir:  Directory where to build dataset
   -v|--verbose:      Print verbose messages during processing
   -h|--help:         Print this help
@@ -55,8 +64,8 @@ while [[ $# -gt 0 ]]; do
   case $key in
     -h|--help)
       print_usage; exit 1;;
-    -c|--csvfile)
-      csvfile="$2"
+    -j|--jsonfile)
+      jsonfile="$2"
       shift # past argument
       shift # past value
       ;;
@@ -74,15 +83,15 @@ done
 
 
 ### Check inputs, set up environment
-if [[ -z ${csvfile:-} ]]; then print_usage; err_exit "-c not set"; else log_debug "CSV file:: ${csvfile}"; fi
+if [[ -z ${jsonfile:-} ]]; then print_usage; err_exit "-j not set"; else log_debug "JSON file:: ${jsonfile}"; fi
 if [[ -z ${datalad_dir:-} ]]; then print_usage; err_exit "-d not set"; else log_debug "DATALAD dir: ${datalad_dir}"; fi
 
 # download a dataset into a local datalad repository
 function cdi_download() {
   log_info "Running datalad (DRYRUN)..."
-  datalad addurls -d ${datalad_dir} -n --fast --nosave  ${csvfile} '{URL}' '{filename}'
+  datalad addurls -d ${datalad_dir} -n --fast --nosave  ${jsonfile} '{link}' '{local_path}'
   log_info "Running datalad..."
-  datalad addurls -d ${datalad_dir} --fast --nosave  ${csvfile} '{URL}' '{filename}'
+  datalad addurls -d ${datalad_dir} --fast --nosave  ${jsonfile} '{link}' '{local_path}'
   log_info "Running datalad..."
   datalad save ${datalad_dir} -m "Created ${datalad_dir}"
 }
