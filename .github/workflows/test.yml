@@ -5,10 +5,12 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@v3"
-      - run: "conda env create"
+      - name: "Create conda environment"
+        run: "conda init && conda env create"
 
   test:
     needs: "setup-environment"
     runs-on: "ubuntu-latest"
     steps:
-      - run: "conda activate cryo-data-ingest && inv test.ci"
+      - name: "Run static analysis / tests"
+        run: "conda activate cryo-data-ingest && inv test.ci"
