@@ -88,11 +88,11 @@ if [[ -z ${datalad_dir:-} ]]; then print_usage; err_exit "-d not set"; else log_
 
 # download a dataset into a local datalad repository
 function cdi_download() {
-  log_info "Running datalad (DRYRUN)..."
+  log_info "Running datalad addurls (DRYRUN)..."
   datalad addurls -d ${datalad_dir} -n --fast --nosave  ${jsonfile} '{link}' '{local_path}'
-  log_info "Running datalad..."
+  log_info "Running datalad addurls..."
   datalad addurls -d ${datalad_dir} --fast --nosave  ${jsonfile} '{link}' '{local_path}'
-  log_info "Running datalad..."
+  log_info "Running datalad save..."
   datalad save ${datalad_dir} -m "Created ${datalad_dir}"
 }
 
