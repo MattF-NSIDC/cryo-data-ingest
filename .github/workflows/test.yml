@@ -1,0 +1,13 @@
+name: "test"
+on: ["push"]
+jobs:
+  setup-environment:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v3"
+      - run: "conda env create"
+
+  test:
+    needs: "setup-environment"
+    steps:
+      - run: "conda activate cryo-data-ingest && inv test.ci"
