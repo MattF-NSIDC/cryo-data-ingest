@@ -4,6 +4,7 @@ channels:
   - nodefaults
 dependencies:
   - python ~=3.10.4
+  - datalad ~=0.17.5
 
   # Dev dependencies:
   - bump2version ~=1.0
