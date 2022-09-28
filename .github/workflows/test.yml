@@ -9,5 +9,6 @@ jobs:
 
   test:
     needs: "setup-environment"
+    runs-on: "ubuntu-latest"
     steps:
       - run: "conda activate cryo-data-ingest && inv test.ci"
