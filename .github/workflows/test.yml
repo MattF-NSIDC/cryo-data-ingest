@@ -2,13 +2,24 @@ name: "test"
 on: ["push"]
 jobs:
   setup-environment:
+    defaults:
+      run:
+        shell: "bash -l {0}"
+
     runs-on: "ubuntu-latest"
     steps:
       - uses: "actions/checkout@v3"
       - name: "Create conda environment"
         run: "conda init bash && conda env create"
 
+
   test:
+    defaults:
+      run:
+        # Login shell enables bash to process conda configuration so we can
+        # activate envs
+        shell: "bash -l {0}"
+
     needs: "setup-environment"
     runs-on: "ubuntu-latest"
     steps:
