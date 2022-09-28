@@ -4,7 +4,6 @@ channels:
   - nodefaults
 dependencies:
   - python ~=3.10.4
-  - datalad ~=0.17.5
 
   # Dev dependencies:
   - invoke ~=1.7
@@ -25,3 +24,4 @@ dependencies:
   # Runtime dependencies:
   - click ~=8.1
   - requests ~=2.23
+  - datalad ~=0.17.5
