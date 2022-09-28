@@ -34,9 +34,9 @@ err_exit() { echo -e "${red}[$(date --iso-8601=seconds)] [ERR] [${PROGNAME}] ${@
 
 trap ctrl_c INT # trap ctrl-c and call ctrl_c()
 function ctrl_c() {
-  MSG_WARN "Caught CTRL-C"
-  MSG_WARN "Killing process"
-  MSG_WARN "No cleanup done..."
+  log_warn "Caught CTRL-C"
+  log_warn "Killing process"
+  log_warn "No cleanup done..."
   kill -term $$ # send this program a terminate signal
 }
 
