@@ -160,7 +160,7 @@ def write_collection_granules(collection: Collection) -> None:
     # each granule
     output_granules: list[OutputGranule] = [
         {
-            'local_path': urlparse(g['url']).path,
+            'local_path': urlparse(g['url']).path[1:], # trim leading "/"
             'link': g['url'],
         }
         for g in granules
