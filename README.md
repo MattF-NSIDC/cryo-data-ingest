@@ -14,3 +14,16 @@ The idea:
 *Granule*: A dataset in a collection corresponding to a single measurement, e.g. a
 swath of data, a day of data, or 8 hours of data, depending on the resolution of the
 collection.
+
+
+## Usage
+
+_In early development. The following instructions are temporary._
+
+0. Set up conda environment (`conda env create`)
+1. Activate conda environment (`conda activate cryo-data-ingest`)
+2. Run the "main script" from the root of this repo:
+
+    ```
+    PYTHONPATH=. python cryo_data_ingest/util/cmr.py
+    ```
