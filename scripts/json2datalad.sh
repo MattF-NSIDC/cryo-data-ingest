@@ -8,11 +8,11 @@
 #
 # [
 #  {
-#    "local_path": "/path/to/file1.ext",
+#    "local_path": "path/to/file1.ext",
 #    "link": "https://url.nsidc.org/path/to/file1.ext"
 #  },
 #  {
-#    "local_path": "/path/to/file2.ext",
+#    "local_path": "path/to/file2.ext",
 #    "link": "https://url.nsidc.org/path/to/file2.ext"
 #  },
 # ]
