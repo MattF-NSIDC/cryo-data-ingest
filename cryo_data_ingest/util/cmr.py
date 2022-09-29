@@ -45,7 +45,7 @@ def _page_cmr_results(
     *,
     query_params: dict | None = None,
     query_headers: dict | None = None,
-) -> Iterator[str]:
+) -> Iterator[bytes]:
     """Generate results until there are no more pages.
 
     Results are returned as raw strings, not parsed as any specific format. Consumer is
@@ -68,7 +68,7 @@ def _page_cmr_results(
 
         if not response.ok:
             raise RuntimeError(
-                f'CMR search failed with error: {response.content}',
+                f"CMR search failed with error: {response.content.decode('utf-8')}",
             )
 
         if page_num == 1:
@@ -112,7 +112,9 @@ def get_nsidc_collections() -> Iterator[Collection]:
     # TODO: Use the paging algorithm
     response = requests.get(cmr_query_url, timeout=REQUESTS_TIMEOUT)
     if not response.ok:
-        raise RuntimeError(f'CMR request failed with error: {response.content}')
+        raise RuntimeError(
+            f"CMR request failed with error: {response.content.decode('utf-8')}"
+        )
 
     response_json = json.loads(response.content)
     collections_json = response_json['feed']['entry']
