@@ -180,7 +180,7 @@ def write_collection_granules(collection: Collection) -> None:
 
     collection_fp = JSON_STORAGE_DIR / f'{collection_readable_id}.json'
 
-    JSON_STORAGE_DIR.mkdir(exist_ok=True)
+    JSON_STORAGE_DIR.mkdir(exist_ok=True, parents=True)
     with open(collection_fp, 'w') as f:
         json.dump(output_granules, f, indent=2)
     logger.info(f'Wrote {collection_fp}')
