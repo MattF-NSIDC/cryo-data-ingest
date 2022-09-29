@@ -22,8 +22,14 @@ _In early development. The following instructions are temporary._
 
 0. Set up conda environment (`conda env create`)
 1. Activate conda environment (`conda activate cryo-data-ingest`)
-2. Run the "main script" from the root of this repo:
+2. Run the "cmr script" from the root of this repo:
 
     ```
     PYTHONPATH=. python cryo_data_ingest/util/cmr.py
+    ```
+
+3. Run the "datalad script" and follow usage instructions:
+
+    ```
+    ./scripts/json2datalad.sh
     ```

@@ -1,9 +1,10 @@
 import csv
 import json
 import logging
-import requests
 from typing import Iterator, TypedDict
 from urllib.parse import urlparse
+
+import requests
 
 from cryo_data_ingest.constants.cmr import (
     CMR_COLLECTIONS_SEARCH_URL,
@@ -33,6 +34,7 @@ class Granule(TypedDict):
 
 class OutputGranule(TypedDict):
     """Just the information needed to create a datalad URL file."""
+
     local_path: str
     link: str
 
@@ -43,7 +45,7 @@ def _page_cmr_results(
     *,
     query_params: dict | None = None,
     query_headers: dict | None = None,
-) -> Iterator[str]:
+) -> Iterator[bytes]:
     """Generate results until there are no more pages.
 
     Results are returned as raw strings, not parsed as any specific format. Consumer is
@@ -53,7 +55,6 @@ def _page_cmr_results(
     #     https://docs.python.org/3/tutorial/controlflow.html#default-argument-values
     query_params = query_params if query_params else dict()
     query_headers = query_headers if query_headers else dict()
-
 
     CMR_SEARCH_HEADER = 'CMR-Search-After'
     page_num = 1
@@ -67,11 +68,13 @@ def _page_cmr_results(
 
         if not response.ok:
             raise RuntimeError(
-                f'CMR search failed with error: {response.content}',
+                f"CMR search failed with error: {response.content.decode('utf-8')}",
             )
 
         if page_num == 1:
-            logger.debug(f"Got {response.headers['CMR-Hits']} hits for query {cmr_query_url}")
+            logger.debug(
+                f"Got {response.headers['CMR-Hits']} hits for query {cmr_query_url}"
+            )
 
         logger.debug(f'Got page {page_num}...')
 
@@ -109,7 +112,9 @@ def get_nsidc_collections() -> Iterator[Collection]:
     # TODO: Use the paging algorithm
     response = requests.get(cmr_query_url, timeout=REQUESTS_TIMEOUT)
     if not response.ok:
-        raise RuntimeError(f'CMR request failed with error: {response.content}')
+        raise RuntimeError(
+            f"CMR request failed with error: {response.content.decode('utf-8')}"
+        )
 
     response_json = json.loads(response.content)
     collections_json = response_json['feed']['entry']
@@ -160,15 +165,14 @@ def write_collection_granules(collection: Collection) -> None:
         return
 
     logger.info(
-        f'Creating file for {collection_readable_id} ({len(granules)}'
-        ' granules)...'
+        f'Creating file for {collection_readable_id} ({len(granules)} granules)...'
     )
 
     # TODO: the `local_path` should not include common path parts that are in common for
     # each granule
     output_granules: list[OutputGranule] = [
         {
-            'local_path': urlparse(g['url']).path[1:], # trim leading "/"
+            'local_path': urlparse(g['url']).path[1:],  # trim leading "/"
             'link': g['url'],
         }
         for g in granules
@@ -176,7 +180,7 @@ def write_collection_granules(collection: Collection) -> None:
 
     collection_fp = JSON_STORAGE_DIR / f'{collection_readable_id}.json'
 
-    JSON_STORAGE_DIR.mkdir(exist_ok=True)
+    JSON_STORAGE_DIR.mkdir(exist_ok=True, parents=True)
     with open(collection_fp, 'w') as f:
         json.dump(output_granules, f, indent=2)
     logger.info(f'Wrote {collection_fp}')
