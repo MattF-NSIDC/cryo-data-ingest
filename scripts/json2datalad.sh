@@ -26,11 +26,7 @@ set -o errexit
 
 PROGNAME=$(basename "$0")
 red='\033[0;31m'; orange='\033[0;33m'; green='\033[0;32m'; yellow='\033[0;93m'; nc='\033[0m' # No Color
-log_info() {
-    if [ "$verbose" = 1 ]; then
-        echo -e "${green}[$(date --iso-8601=seconds)] [INFO] [${PROGNAME}] ${*}${nc}";
-    fi;
-}
+log_info() { if [[ "${verbose:-}" == 1 ]]; then echo -e "${green}[$(date --iso-8601=seconds)] [INFO] [${PROGNAME}] ${*}${nc}"; fi; }
 log_warn() { echo -e "${orange}[$(date --iso-8601=seconds)] [WARN] [${PROGNAME}] ${*}${nc}"; }
 log_err() { echo -e "${red}[$(date --iso-8601=seconds)] [ERR] [${PROGNAME}] ${*}${nc}" >&2; }
 log_debug() { if [[ ${debug:-} == 1 ]]; then echo -e "${yellow}[$(date --iso-8601=seconds)] [DEBUG] [${PROGNAME}] ${*}${nc}"; fi }
